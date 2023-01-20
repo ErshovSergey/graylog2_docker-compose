@@ -2,19 +2,23 @@ version: '2'
 services:
   # MongoDB: https://hub.docker.com/_/mongo/
   mongo:
+    hostname: mongo
     restart: always
     container_name: mongo
     image: "mongo:3"
     volumes:
       - "/etc/timezone:/etc/timezone:ro"
-      - ${DATA_FOLDER_PATH}/mongo/db:/data/db
 
   elasticsearch:
+    hostname: elasticsearch
+    container_name: elasticsearch
+    restart: always
     image: docker.elastic.co/elasticsearch/elasticsearch:5.5.2
+
     volumes:
       - "/etc/timezone:/etc/timezone:ro"
-#      - ${DATA_FOLDER_PATH}/elasticsearch/data:/usr/share/elasticsearch/data
-#      - es_data:/usr/share/elasticsearch/data
+      - ${DATA_FOLDER_PATH}/elasticsearch/data:/usr/share/elasticsearch/data
+
     environment:
       - http.host=0.0.0.0
       - transport.host=localhost
@@ -30,13 +34,12 @@ services:
 
 
   graylog:
-    restart: always
+    hostname: graylog
     container_name: graylog
+    restart: always
     image: graylog/graylog:2.3.2-1
-#    image: graylog/graylog:4.1
     volumes:
       - "/etc/timezone:/etc/timezone:ro"
-#      - ${DATA_FOLDER_PATH}/graylog/config:/usr/share/graylog/data/config
       - ${DATA_FOLDER_PATH}/graylog/journal:/usr/share/graylog/data/journal
     environment:
       GRAYLOG_PASSWORD_SECRET: ${GRAYLOG_PASSWORD_SECRET}
@@ -49,6 +52,6 @@ services:
     ports:
       - "${HTTP_IP}:${HTTP_PORT}:9000"
       - "${HTTP_IP}:${HTTP_PORT1}:12201/udp"
-      - "${HTTP_IP}:${HTTP_PORT2}:1514/udp"
+      - "${SYSLOG_IP}:${SYSLOG_PORT}:1514/udp"
       - "${HTTP_IP}:${HTTP_PORT3}:12301/udp"
       - "${HTTP_IP}:${HTTP_PORT4}:12302/udp"
